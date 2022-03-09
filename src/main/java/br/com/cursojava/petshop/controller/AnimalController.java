@@ -19,21 +19,21 @@ public class AnimalController {
         this.animalService = animalService;
     }
 
-    //Create do Crud
+    //Cria Animal
     @PostMapping(value = "/salva-animal", consumes = "application/json")
     public ResponseEntity<Animal> criaAnimal(@RequestBody Animal animal) {
         animal = animalService.criarAnimal(animal);
         return new ResponseEntity<>(animal, HttpStatus.CREATED);
     }
 
-    //Read do CRUD
+    //Busca todos os animais
     @GetMapping("/todos-animais")
     public ResponseEntity<List<Animal>> getTodosUsuarios() {
         List<Animal> animais = animalService.getAnimal();
         return new ResponseEntity<>(animais, HttpStatus.OK);
     }
 
-    //por nome
+    //Buscar por nome
     @GetMapping("/animais/{nome}")
     public ResponseEntity<List<Animal>> getAnimalPorNome(@PathVariable String nome) {
         return new ResponseEntity<>(animalService.getAnimalPorNome(nome), HttpStatus.OK);
@@ -45,19 +45,19 @@ public class AnimalController {
         return new ResponseEntity<>(animalService.getAnimalPorRaca(raca), HttpStatus.OK);
     }
 
-    //Busca animal por raca
+    //Busca animal por idade
     @GetMapping("/animal-idade/{idade}")
     public ResponseEntity<List<Animal>> getAnimalPorRaca(@PathVariable Integer idade) {
         return new ResponseEntity<>(animalService.getAnimalPorIdade(idade), HttpStatus.OK);
     }
 
-    //Alter
+    //Altera animal
     @PutMapping (value = "/altera-animal", consumes = "application/json")
     public ResponseEntity<Animal> alteraAnimal(@RequestBody Animal animal) {
         animal = animalService.alteraAnimal(animal);
         return new ResponseEntity<>(animal, HttpStatus.OK);
     }
-
+    //Delete animal
     @DeleteMapping(value = "/deleta-animal", consumes = "application/json")
     public ResponseEntity<Animal> deletaAnimal(@RequestBody Animal animal){
         animal = animalService.deletaAnimal(animal);

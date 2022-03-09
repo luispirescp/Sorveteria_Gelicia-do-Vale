@@ -12,12 +12,10 @@ public class AnimalService {
     private final AnimalRepository animalRepository ;
 
     public AnimalService(AnimalRepository animalRepository ) {
-
         this.animalRepository = animalRepository;
     }
 
     public List<Animal> getAnimal(){
-
         return (List<Animal>) animalRepository.findAll();
     }
 
@@ -25,21 +23,15 @@ public class AnimalService {
         return animalRepository.findByNome(nome);
     }
 
-
-
     public List<Animal> getAnimalPorRaca(String raca){
-
         return animalRepository.findByRaca(raca);
     }
 
     public List<Animal> getAnimalPorIdade(Integer idade){
-
         return animalRepository.findByIdade(idade);
     }
 
     public Animal criarAnimal(Animal animal){
-
-
         return animalRepository.save(animal);
     }
 
@@ -47,7 +39,7 @@ public class AnimalService {
        if(animalRepository.existsById(animal.getId())){
            return animalRepository.save(animal);
        }else {
-           throw new RuntimeException(String.format("O animal com o ID", animal.getId()));
+           throw new RuntimeException(String.format("O animal com o ID %d não existe!", animal.getId()));
        }
     }
 

@@ -17,7 +17,6 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-
     //Create do Crud
     @PostMapping(value = "/salva-usuario", consumes = "application/json")
     public ResponseEntity<Usuario> salvaUsuario(@RequestBody Usuario usuario) {
@@ -32,13 +31,13 @@ public class UsuarioController {
         return new ResponseEntity<>(usuarios, HttpStatus.OK);
     }
 
-    //Busca por nome
+    //Busca usuario por nome
     @GetMapping("/usuarios/{nome}")
     public ResponseEntity<List<Usuario>> getUsuariosPorNome(@PathVariable String nome) {
         return new ResponseEntity<>(usuarioService.getUsuarioPorNome(nome), HttpStatus.OK);
     }
 
-    //Busca por email
+    //Busca usuario por email
     @GetMapping("/usuario/{email}")
     public ResponseEntity<List<Usuario>> getUsuariosPorEmail(@PathVariable String email) {
         return new ResponseEntity<>(usuarioService.getUsuarioPorEmail(email), HttpStatus.OK);
