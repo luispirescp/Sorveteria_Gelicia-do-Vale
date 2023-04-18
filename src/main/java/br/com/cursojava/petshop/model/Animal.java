@@ -12,6 +12,7 @@ import javax.persistence.Id;
 @Data
 public class Animal {
 
+    //gerando id no banco
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
