@@ -1,6 +1,5 @@
 package br.com.cursojava.petshop.model;
 
-import br.com.cursojava.petshop.enums.Tipo;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -10,13 +9,14 @@ import javax.persistence.Id;
 
 @Entity
 @Data
-public class Animal {
+public class Funcionario {
 
     //gerando id no banco
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String nome;
-    private String raca;
+    private String funcao;
+    private String codigo;
     private Integer idade;
 }

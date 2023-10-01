@@ -1,5 +1,6 @@
 package br.com.cursojava.petshop.service;
 
+import br.com.cursojava.petshop.enums.Tipo;
 import br.com.cursojava.petshop.model.Animal;
 import br.com.cursojava.petshop.repository.AnimalRepository;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class AnimalService {
     public List<Animal> getAnimalPorIdade(Integer idade){
         return animalRepository.findByIdade(idade);
     }
+
 
     public Animal criarAnimal(Animal animal){
         return animalRepository.save(animal);
