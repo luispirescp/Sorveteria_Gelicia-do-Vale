@@ -11,7 +11,6 @@ import java.util.List;
 
 @Repository
 public interface UsuarioRepository extends CrudRepository<Usuario,Long> {
-
     public boolean existsById(Long id);
 
     public List<Usuario> findByNome(String nome);

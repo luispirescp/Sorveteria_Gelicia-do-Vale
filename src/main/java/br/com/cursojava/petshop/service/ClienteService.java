@@ -16,10 +16,12 @@ public class ClienteService {
     }
 
     public List<Cliente> getClientes(){
+
         return (List<Cliente>) clienteRepository.findAll();
     }
 
     public List<Cliente> getClientePorNome(String nome){
+
         return clienteRepository.findByNome(nome);
     }
 

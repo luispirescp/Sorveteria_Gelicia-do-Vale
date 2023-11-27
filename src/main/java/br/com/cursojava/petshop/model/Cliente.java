@@ -11,11 +11,11 @@ import javax.persistence.Id;
 @Data
 public class Cliente {
 
+    //gerando id no banco
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String nome;
-    private String telefone;
     private String cpf;
-
+    private String telefone;
 }
