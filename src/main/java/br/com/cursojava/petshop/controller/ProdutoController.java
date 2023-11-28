@@ -65,10 +65,9 @@ public class ProdutoController {
 
     @GetMapping({"/file"})
     public  byte[] getImage() throws IOException {
-
-            Resource resource = new ClassPathResource("C:\\Users\\luisp\\Documents\\Programacao\\spring\\sorveteria_gdelicia\\uploads\\pequena.png");
+            Resource resource = new ClassPathResource("\\..\\..\\\\pequena.png");
             Path path = Paths.get(resource.getURI());
-            // Lê a imagem como array de bytes
+//            // Lê a imagem como array de bytes
             return Files.readAllBytes(path);
 }
 

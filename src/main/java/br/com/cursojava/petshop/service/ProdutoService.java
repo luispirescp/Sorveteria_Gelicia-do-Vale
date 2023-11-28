@@ -12,9 +12,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Formatter;
 import java.util.List;
 
 import static br.com.cursojava.petshop.model.Tipo.fromString;
@@ -23,7 +27,6 @@ import static br.com.cursojava.petshop.model.Tipo.fromString;
 public class ProdutoService {
  private final ProdutoRepository produtoRepository;
     private final Path fileStorageLocation;
-
     public static final String caminhoFinal = "C:\\Users\\luisp\\Documents\\Programacao\\spring\\sorveteria_gdelicia\\src\\main\\resources\\static\\public";
 
     public ProdutoService(ProdutoRepository produtoRepository,@Value(caminhoFinal) Path fileStorageLocation) throws IOException {
@@ -31,9 +34,6 @@ public class ProdutoService {
         this.fileStorageLocation = fileStorageLocation;
     }
 
-    public String caminhoImage(){
-    return caminhoFinal+"\\Teste_tiger.png";
-    }
     public List<Produto> getProduto() {
         return (List)this.produtoRepository.findAll();
     }
@@ -46,7 +46,6 @@ public class ProdutoService {
     }
 
     public Produto criarProduto(Produto produto) {
-
         return (Produto) this.produtoRepository.save(produto);
     }
 
@@ -68,14 +67,34 @@ public class ProdutoService {
     }
 
     public String saveImage(MultipartFile image) throws IOException {
-        String fileName = "Teste_"+image.getOriginalFilename();
-        Path targetLocation = fileStorageLocation.resolve(fileName);
+        String fileName = image.getOriginalFilename();
+        String nomeImagem = generateHash(fileName)+"_"+fileName;
+        Path targetLocation = fileStorageLocation.resolve(nomeImagem);
         image.transferTo(targetLocation);
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+        String fileDownloadUri = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
                 .path(fileName)
                 .toUriString();
-        int nomeImagem = fileName.hashCode()*84621;
-        String nomeImagem_final = String.valueOf(nomeImagem)+"_"+fileName;
-        return nomeImagem_final;
+        return nomeImagem;
+    }
+
+    public static String generateHash(String imageName) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            digest.update(imageName.getBytes("UTF-8"));
+            byte[] hashBytes = digest.digest();
+
+            // Convertendo o array de bytes para uma representação hexadecimal
+            Formatter formatter = new Formatter();
+            for (byte b : hashBytes) {
+                formatter.format("%02x", b);
+            }
+            String hash = formatter.toString();
+            formatter.close();
+            return hash;
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
