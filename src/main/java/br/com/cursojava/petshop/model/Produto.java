@@ -3,6 +3,9 @@ package br.com.cursojava.petshop.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.File;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 
 
 @Entity
@@ -17,9 +20,5 @@ public class Produto {
     private int quantity;
     private Tipo tipo;
     private double price;
-    @Lob
-    @Column(
-            length = 900
-    )
-    private byte[] image;
+    private String image;
 }
