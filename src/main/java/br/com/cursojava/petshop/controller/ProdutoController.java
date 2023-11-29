@@ -44,10 +44,15 @@ public class ProdutoController {
     @GetMapping({"/todos-produtos"})
     public ResponseEntity<List<Produto>> getTodosProdutos() {
         List<Produto> produto = this.produtoService.getProduto();
-        
+
         return new ResponseEntity(produto, HttpStatus.OK);
     }
 
+    @GetMapping({"/{name}"})
+    public ResponseEntity<List<Produto>> getProdutosTOName(@PathVariable String name) {
+        List<Produto> produto = this.produtoService.getProdutoTOName(name);
+        return new ResponseEntity(produto, HttpStatus.OK);
+    }
     @GetMapping({"/file/{name}"})
     public  ResponseEntity<Object> getImage(@PathVariable String name) throws IOException {
         String baseUrlImage = "http://localhost:8080/public/";

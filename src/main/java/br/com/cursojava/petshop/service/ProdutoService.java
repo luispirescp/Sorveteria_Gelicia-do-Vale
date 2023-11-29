@@ -37,6 +37,10 @@ public class ProdutoService {
         return (List)this.produtoRepository.findAll();
     }
 
+    public List<Produto> getProdutoTOName(String name) {
+        return this.produtoRepository.findByParteNome(name);
+    }
+
     public int getQuantityProduto( String name) {
             Produto produto = (Produto) produtoRepository.findByName(name);
             return produto != null ? produto.getQuantity() : 0;
