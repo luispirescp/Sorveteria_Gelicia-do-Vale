@@ -13,9 +13,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.math.BigInteger;
+import java.nio.file.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
@@ -37,62 +36,67 @@ public class ProdutoService {
     public List<Produto> getProduto() {
         return (List)this.produtoRepository.findAll();
     }
-    public List<Produto> getProdutoPorName(String name) {
-        return this.produtoRepository.findByName(name);
+
+    public int getQuantityProduto( String name) {
+            Produto produto = (Produto) produtoRepository.findByName(name);
+            return produto != null ? produto.getQuantity() : 0;
     }
 
-    public List<Produto> getProduto(int quantity) {
-        return this.produtoRepository.findByQuantity(quantity);
+    public Boolean verificaNome( String name) {
+
+        Produto produto = produtoRepository.findByName(name);
+        if(produtoRepository.findByName(name).getName().equals(name) || produto != null){
+            return true;
+        }else {
+            return false;
+        }
+    }
+    public String getImageProduto( String name) {
+
+        Produto produto = (Produto) produtoRepository.findByName(name);
+        return produto != null ? produto.getImage() : "";
     }
 
     public Produto criarProduto(Produto produto) {
         return (Produto) this.produtoRepository.save(produto);
     }
 
-    public Produto alteraProduto(Produto produto) {
-        if (this.produtoRepository.existsById(produto.getId())) {
-            return (Produto)this.produtoRepository.save(produto);
+    public void alteraProduto(Produto produto, Long id) {
+        if (this.produtoRepository.existsById(id)) {
+            produto.setId(id);
+            this.produtoRepository.save(produto);
         } else {
             throw new RuntimeException(String.format("O produto com o ID %d não existe!", produto.getId()));
         }
     }
 
-    public Produto deletaProduto(Produto produto) {
-        if (this.produtoRepository.existsById(produto.getId())) {
-            this.produtoRepository.delete(produto);
-            return produto;
+    public void deletarProdutoPorId(Long id) {
+        if (this.produtoRepository.existsById(id)) {
+            this.produtoRepository.deleteById(id);
         } else {
-            throw new RuntimeException(String.format("O produto com o ID %d não existe!", produto.getId()));
+            throw new RuntimeException(String.format("O produto com o ID %d não existe!",id));
         }
     }
 
     public String saveImage(MultipartFile image) throws IOException {
-        String fileName = image.getOriginalFilename();
-        String nomeImagem = generateHash(fileName)+"_"+fileName;
-        Path targetLocation = fileStorageLocation.resolve(nomeImagem);
-        image.transferTo(targetLocation);
-        String fileDownloadUri = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path(fileName)
-                .toUriString();
-        return nomeImagem;
+        String fileName = generateHash(image.getOriginalFilename()) + "_" + image.getOriginalFilename();
+        Path targetLocation = fileStorageLocation.resolve(fileName);
+        Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+        return fileName;
     }
 
     public static String generateHash(String imageName) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(imageName.getBytes("UTF-8"));
-            byte[] hashBytes = digest.digest();
-
-            // Convertendo o array de bytes para uma representação hexadecimal
-            Formatter formatter = new Formatter();
-            for (byte b : hashBytes) {
-                formatter.format("%02x", b);
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(imageName.getBytes());
+            BigInteger no = new BigInteger(1, messageDigest);
+            // Convertendo o hash em formato hexadecimal
+            StringBuilder hashText = new StringBuilder(no.toString(16));
+            while (hashText.length() < 32) {
+                hashText.insert(0, "0");
             }
-            String hash = formatter.toString();
-            formatter.close();
-            return hash;
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            return hashText.toString();
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }

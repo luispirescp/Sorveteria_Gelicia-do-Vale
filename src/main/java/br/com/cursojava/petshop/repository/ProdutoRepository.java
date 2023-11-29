@@ -11,7 +11,7 @@ public interface ProdutoRepository extends CrudRepository<Produto,Long> {
 
     boolean existsById(Long id);
 
-    List<Produto> findByName(String name);
+    Produto findByName(String name);
 
 
     default List<Produto> findByQuantity(int quantity) {
@@ -19,6 +19,4 @@ public interface ProdutoRepository extends CrudRepository<Produto,Long> {
     }
 
     List<Produto> findByPrice(double price);
-
-
 }
