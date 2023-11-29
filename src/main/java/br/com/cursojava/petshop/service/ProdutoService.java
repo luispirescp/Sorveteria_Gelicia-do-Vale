@@ -1,26 +1,19 @@
 package br.com.cursojava.petshop.service;
 
-import br.com.cursojava.petshop.exception.TipoNaoEncontradoException;
+import br.com.cursojava.petshop.dto.ProdutoDTO;
 import br.com.cursojava.petshop.model.Produto;
-import br.com.cursojava.petshop.model.Tipo;
 import br.com.cursojava.petshop.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Formatter;
 import java.util.List;
-
-import static br.com.cursojava.petshop.model.Tipo.fromString;
+import java.util.Optional;
 
 @Service
 public class ProdutoService {
@@ -47,7 +40,6 @@ public class ProdutoService {
     }
 
     public Boolean verificaNome( String name) {
-
         Produto produto = produtoRepository.findByName(name);
         if(produtoRepository.findByName(name).getName().equals(name) || produto != null){
             return true;
@@ -56,12 +48,12 @@ public class ProdutoService {
         }
     }
     public String getImageProduto( String name) {
-
         Produto produto = (Produto) produtoRepository.findByName(name);
         return produto != null ? produto.getImage() : "";
     }
 
     public Produto criarProduto(Produto produto) {
+
         return (Produto) this.produtoRepository.save(produto);
     }
 
@@ -82,7 +74,44 @@ public class ProdutoService {
         }
     }
 
-    public String saveImage(MultipartFile image) throws IOException {
+    public Optional<Produto> getProdutoByID(Long id) {
+        if (this.produtoRepository.existsById(id)) {
+              return this.produtoRepository.findById(id);
+        } else {
+            throw new RuntimeException(String.format("O produto com o ID %d não existe!",id));
+        }
+    }
+    public ProdutoDTO save(ProdutoDTO produtoDTO) {
+        Produto produto = convertToEntity(produtoDTO);
+        Produto savedProduto = produtoRepository.save(produto);
+        return convertToDTO(savedProduto);
+    }
+
+    private ProdutoDTO convertToDTO(Produto produto){
+        ProdutoDTO produtoDTO = new ProdutoDTO();
+        produtoDTO.setId(produto.getId());
+        produtoDTO.setName(produto.getName());
+        produtoDTO.setBarcode(produto.getBarcode());
+        produtoDTO.setDescription(produto.getDescription());
+        produtoDTO.setQuantity(produto.getQuantity());
+        produtoDTO.setTipo(produto.getTipo());
+        produtoDTO.setPrice(produto.getPrice());
+        return produtoDTO;
+    }
+
+    // Método para converter ProdutoDTO em Produto
+    private Produto convertToEntity(ProdutoDTO produtoDTO) {
+        Produto produto = new Produto();
+        produto.setId(produtoDTO.getId());
+        produto.setName(produtoDTO.getName());
+        produto.setBarcode(produtoDTO.getBarcode());
+        produto.setDescription(produtoDTO.getDescription());
+        produto.setQuantity(produtoDTO.getQuantity());
+        produto.setTipo(produtoDTO.getTipo());
+        produto.setPrice(produtoDTO.getPrice());
+        return produto;
+    }
+    public String saveImage(Long di, MultipartFile image) throws IOException {
         String fileName = generateHash(image.getOriginalFilename()) + "_" + image.getOriginalFilename();
         Path targetLocation = fileStorageLocation.resolve(fileName);
         Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
