@@ -44,6 +44,7 @@ public class ProdutoController {
     @GetMapping({"/todos-produtos"})
     public ResponseEntity<List<Produto>> getTodosProdutos() {
         List<Produto> produto = this.produtoService.getProduto();
+        
         return new ResponseEntity(produto, HttpStatus.OK);
     }
 
