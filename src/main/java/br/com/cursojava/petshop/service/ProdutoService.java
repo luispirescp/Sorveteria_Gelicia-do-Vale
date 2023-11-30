@@ -116,6 +116,19 @@ public class ProdutoService {
         return produtoDTO;
     }
 
+    public void reduzirQuantidadeDoProduto(Long id, int quantidadeComprada){
+        Optional<Produto> produtoOptional = Optional.ofNullable(produtoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado")));
+        Produto produto = produtoOptional.get();
+        int quantidadeAtual = produto.getQuantity();
+        if(quantidadeAtual >= quantidadeComprada){
+            produto.setQuantity(quantidadeAtual - quantidadeComprada);
+            produtoRepository.save(produto);
+        }else {
+            throw new RuntimeException("Quantidade insuficiente em estoque");
+        }
+    }
+
     // Método para converter ProdutoDTO em Produto
     private Produto convertToEntity(ProdutoDTO produtoDTO) {
         Produto produto = new Produto();

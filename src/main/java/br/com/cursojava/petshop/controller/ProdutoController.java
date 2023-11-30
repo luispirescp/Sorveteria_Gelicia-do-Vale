@@ -32,11 +32,21 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduto);
     }
 
+    @PostMapping(value = {"/realizar/{id}"}, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> realizarCompra(@RequestParam Long id, @RequestParam int quantity) {
+        try {
+            produtoService.reduzirQuantidadeDoProduto(id, quantity);
+            return ResponseEntity.ok("Compra realizada com sucesso");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PutMapping(value = {"/save-image/{id}"}, consumes = {"multipart/form-data"})
-    public ResponseEntity<Object> salvaImage(@RequestParam  Long id, @RequestPart MultipartFile image) throws IOException {
-            String nomeImagemHash = String.valueOf(produtoService.saveImage(id,image));
+    public ResponseEntity<Object> salvaImage(@RequestParam Long id, @RequestPart MultipartFile image) throws IOException {
+        String nomeImagemHash = String.valueOf(produtoService.saveImage(id, image));
 //            ProdutoDTO savedProduto = produtoService.save(produtoDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nomeImagemHash);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nomeImagemHash);
 
     }
 
@@ -51,26 +61,27 @@ public class ProdutoController {
         List<Produto> produto = this.produtoService.getProdutoTOName(name);
         return new ResponseEntity(produto, HttpStatus.OK);
     }
+
     @GetMapping({"/file/{name}"})
-    public  ResponseEntity<Object> getImage(@PathVariable String name) throws IOException {
+    public ResponseEntity<Object> getImage(@PathVariable String name) throws IOException {
         String baseUrlImage = "http://localhost:8080/public/";
-        String imageUrl = baseUrlImage+produtoService.getImageProduto(name);
+        String imageUrl = baseUrlImage + produtoService.getImageProduto(name);
         return ResponseEntity.status(302).location(java.net.URI.create(imageUrl)).build();
-}
+    }
 
     @GetMapping({"/quantidade/{name}"})
-    public int quantidade(@PathVariable String name){
-    return produtoService.getQuantityProduto(name);
+    public int quantidade(@PathVariable String name) {
+        return produtoService.getQuantityProduto(name);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletarProduto(@PathVariable Long id) {
-       try {
-        produtoService.deletarProdutoPorId(id);
-        return new ResponseEntity<>("Produto deletado com sucesso", HttpStatus.OK);
-       }catch (RuntimeException e){
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O produto com o ID " + id + " não existe!");
-       }
+        try {
+            produtoService.deletarProdutoPorId(id);
+            return new ResponseEntity<>("Produto deletado com sucesso", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O produto com o ID " + id + " não existe!");
+        }
     }
 
     @GetMapping("producto/{id}")
