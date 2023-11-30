@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import br.com.cursojava.petshop.exception.GlobalExceptionHandler;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,24 +20,26 @@ import java.util.Optional;
 public class ProdutoController {
     private final ProdutoService produtoService;
     private final ControleEstoqueService controleEstoqueService;
+
     public ProdutoController(ProdutoService produtoService, ControleEstoqueService controleEstoqueService) {
         this.produtoService = produtoService;
         this.controleEstoqueService = controleEstoqueService;
     }
-    @PostMapping(value = {"/create-produto"},consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProdutoDTO> createProduct(@RequestBody ProdutoDTO produtoDTO) throws IOException {
-            ProdutoDTO savedProduto = produtoService.save(produtoDTO);
-            return  ResponseEntity.status(HttpStatus.CREATED).body(savedProduto);
-    }
-    @PostMapping(value = {"/save-image/{id}"},consumes = {"multipart/form-data"})
-    public ResponseEntity<ProdutoDTO> salvaImage(@RequestParam Long id, @RequestPart MultipartFile image) throws IOException {
-        ProdutoDTO produtoDTO = new ProdutoDTO();
-        String nomeImagemHash = produtoService.saveImage(id, image);
 
-        produtoDTO.setImage(nomeImagemHash);
+    @PostMapping(value = {"/create-produto"}, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProdutoDTO> createProduct(@RequestBody ProdutoDTO produtoDTO) throws IOException {
         ProdutoDTO savedProduto = produtoService.save(produtoDTO);
-        return  ResponseEntity.status(HttpStatus.CREATED).body(savedProduto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduto);
     }
+
+    @PutMapping(value = {"/save-image/{id}"}, consumes = {"multipart/form-data"})
+    public ResponseEntity<Object> salvaImage(@RequestParam  Long id, @RequestPart MultipartFile image) throws IOException {
+            String nomeImagemHash = String.valueOf(produtoService.saveImage(id,image));
+//            ProdutoDTO savedProduto = produtoService.save(produtoDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nomeImagemHash);
+
+    }
+
     @GetMapping({"/todos-produtos"})
     public ResponseEntity<List<Produto>> getProdutos() {
         List<Produto> produto = this.produtoService.getProduto();
@@ -73,8 +76,8 @@ public class ProdutoController {
     @GetMapping("producto/{id}")
     public ResponseEntity<Object> getProductById(@PathVariable Long id) {
         try {
-            Optional<Produto> produtoDTO = produtoService.getProdutoByID(id);
-            return ResponseEntity.ok().body(produtoDTO);
+            Optional<Produto> produto = produtoService.getProdutoByID(id);
+            return ResponseEntity.ok().body(produto);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("O produto com o ID " + id + " não foi encontrado!");
@@ -82,8 +85,13 @@ public class ProdutoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> atualizarProdito(@PathVariable Long id, @RequestBody Produto produto){
-        produtoService.alteraProduto(produto,id);
-        return new ResponseEntity<>("Produto Atualizado",HttpStatus.OK);
+    public ResponseEntity<Object> atualizarProdito(@PathVariable Long id, @RequestBody ProdutoDTO produtoDTO) {
+        try {
+            produtoService.alteraProduto(produtoDTO, id);
+            return new ResponseEntity<>("Produto Atualizado", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erro ");
+        }
     }
 }
