@@ -6,13 +6,13 @@ import br.com.cursojava.petshop.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.w3c.dom.ranges.RangeException;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class ProdutoService {
     private final ProdutoRepository produtoRepository;
     private final Path fileStorageLocation;
-    public static final String caminhoFinal = "C:\\Users\\luisp\\Documents\\Programacao\\spring\\sorveteria_gdelicia\\src\\main\\resources\\static\\public";
+    public static final String caminhoFinal = "C:\\Users\\luisp\\Documents\\Programacao\\spring\\Sorveteria_Gelicia-do-Vale\\src\\main\\resources\\static\\public";
 
     public ProdutoService(ProdutoRepository produtoRepository, @Value(caminhoFinal) Path fileStorageLocation) throws IOException {
         this.produtoRepository = produtoRepository;
@@ -183,4 +183,28 @@ public class ProdutoService {
             return null;
         }
     }
+
+    public List<Produto> saveListProdutos(List<Produto> listaProdutos) {
+        List<Produto> produtosSalvos = new ArrayList<>();
+        for (Produto produto : listaProdutos) {
+            // Realize suas validações aqui, se necessário
+            if (produtoIsValid(produto)) {
+                Produto produtoSalvo = produtoRepository.save(produto);
+                produtosSalvos.add(produtoSalvo);
+            } else {
+                // Lógica para lidar com produtos inválidos, se necessário
+                System.out.println("Produto inválido: " + produto.getName());
+            }
+        }
+        return produtosSalvos;
+    }
+
+    private boolean produtoIsValid(Produto produto) {
+        // Implemente sua lógica de validação aqui
+        // Por exemplo, verifique se os campos obrigatórios estão preenchidos corretamente
+        return produto.getName() != null && !produto.getName().isEmpty()
+                && produto.getPrice() > 0 && produto.getQuantity() > 0;
+    }
+
+
 }

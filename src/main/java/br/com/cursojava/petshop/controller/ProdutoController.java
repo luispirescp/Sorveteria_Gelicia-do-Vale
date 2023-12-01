@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import br.com.cursojava.petshop.exception.GlobalExceptionHandler;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,6 +31,11 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduto);
     }
 
+    @PostMapping(value = {"/create-produto/polula-banco"}, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Produto>> createProductPolulaBanco(@RequestBody List<Produto> produtos) throws IOException {
+        List<Produto> savedProduto = produtoService.saveListProdutos(produtos);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduto);
+    }
     @PostMapping(value = {"/realizar/{id}"}, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> realizarCompra(@RequestParam Long id, @RequestParam int quantity) {
         try {
