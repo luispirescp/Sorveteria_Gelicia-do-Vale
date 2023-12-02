@@ -4,6 +4,7 @@ import br.com.cursojava.petshop.dto.ProdutoDTO;
 import br.com.cursojava.petshop.model.Produto;
 import br.com.cursojava.petshop.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +35,6 @@ public class ProdutoService {
     public List<Produto> getProdutoTOName(String name) {
         return this.produtoRepository.findByParteNome(name);
     }
-
     public int getQuantityProduto(String name) {
         Produto produto = (Produto) produtoRepository.findByName(name);
         return produto != null ? produto.getQuantity() : 0;
@@ -53,30 +53,16 @@ public class ProdutoService {
         Produto produto = (Produto) produtoRepository.findByName(name);
         return produto != null ? produto.getImage() : "";
     }
-
-    public Produto criarProduto(Produto produto) {
-        return (Produto) this.produtoRepository.save(produto);
-    }
-
-    public void alteraProduto(ProdutoDTO produtoDTO, Long id) {
-        //busca no banco os atributos que estão relacionados com o id e atribui a variavel produtoOprional
+    public Produto alteraProduto(ProdutoDTO produtoDTO, Long id) {
         Optional<Produto> produtoOptional = produtoRepository.findById(id);
         if (produtoOptional.isPresent()) {
-            // passo para a variavel produto todos os valores capturado do banco
             Produto produto = produtoOptional.get();
-            //nesse momento faço a alteração setando o valore que vem da requisição para os atributos do objeto resgatado
-            produto.setName(produtoDTO.getName());
-            produto.setBarcode(produtoDTO.getBarcode());
-            produto.setDescription(produtoDTO.getDescription());
-            produto.setQuantity(produtoDTO.getQuantity());
-            produto.setPrice(produtoDTO.getPrice());
-            produto.setTipo(produtoDTO.getTipo());
-            //salvo o produto com os valores substituidos ateriormente os que estavam no banco para os que
-            //chegaram via requisição;
+            Produto produtoConvertido = convertToEntity(produtoDTO);
+             produtoConvertido.setId(produto.getId());
             try {
-                this.produtoRepository.save(produto);
-            } catch (RuntimeException e) {
-                throw new RuntimeException("Erro ao salvar o produto: " + e.getMessage());
+                return  this.produtoRepository.save(produtoConvertido);
+            } catch (DataAccessException e) {
+                throw new RuntimeException("Erro ao salvar o produto: " + e.getRootCause().getMessage());
             }
         } else {
             throw new RuntimeException(String.format("O produto com o ID %d não existe!", produtoDTO.getId()));

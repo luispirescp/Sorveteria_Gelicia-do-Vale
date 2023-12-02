@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: br.com.cursojava.petshop.PetShopApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.68 s - in br.com.cursojava.petshop.PetShopApplicationTests

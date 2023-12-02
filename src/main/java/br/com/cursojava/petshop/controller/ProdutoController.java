@@ -75,9 +75,13 @@ public class ProdutoController {
 
     @GetMapping({"/quantidade/{name}"})
     public int quantidade(@PathVariable String name) {
-        return produtoService.getQuantityProduto(name);
-    }
+        try {
 
+        return produtoService.getQuantityProduto(name);
+        }catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quantidade Não encontrada").getStatusCodeValue();
+        }
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletarProduto(@PathVariable Long id) {
         try {
@@ -100,13 +104,13 @@ public class ProdutoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> atualizarProdito(@PathVariable Long id, @RequestBody ProdutoDTO produtoDTO) {
+    public ResponseEntity<Object> atualizarProduto(@PathVariable Long id, @RequestBody ProdutoDTO produtoDTO) {
         try {
-            produtoService.alteraProduto(produtoDTO, id);
-            return new ResponseEntity<>("Produto Atualizado", HttpStatus.OK);
+            Produto produto = produtoService.alteraProduto(produtoDTO, id);
+            return ResponseEntity.ok(produto);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Erro ");
+            String mensagemErro = "Erro ao atualizar o produto com o ID: "+id;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensagemErro);
         }
     }
 }
