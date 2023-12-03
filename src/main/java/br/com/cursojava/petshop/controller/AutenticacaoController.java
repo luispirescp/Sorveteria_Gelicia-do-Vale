@@ -12,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -28,7 +27,8 @@ public class AutenticacaoController {
         var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
         var authentication = manager.authenticate(authenticationToken);
 
-        var tonekJWT = tokenService.gerarTone((Usuario) authentication.getPrincipal());
+        var tonekJWT = tokenService.geraToken((Usuario) authentication.getPrincipal());
+        System.out.println(tonekJWT);
         return ResponseEntity.ok( new DadosTokenJWT(tonekJWT));
     }
 
