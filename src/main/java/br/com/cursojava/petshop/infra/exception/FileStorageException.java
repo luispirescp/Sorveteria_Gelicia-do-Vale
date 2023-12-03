@@ -1,4 +1,4 @@
-package br.com.cursojava.petshop.exception;
+package br.com.cursojava.petshop.infra.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

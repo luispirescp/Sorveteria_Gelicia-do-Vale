@@ -1,9 +1,8 @@
 package br.com.cursojava.petshop.controller;
 
-import br.com.cursojava.petshop.dto.ProdutoDTO;
-import br.com.cursojava.petshop.model.Produto;
-import br.com.cursojava.petshop.service.ControleEstoqueService;
-import br.com.cursojava.petshop.service.ProdutoService;
+import br.com.cursojava.petshop.domain.dto.ProdutoDTO;
+import br.com.cursojava.petshop.domain.produto.Produto;
+import br.com.cursojava.petshop.domain.produto.ProdutoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +17,11 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class ProdutoController {
     private final ProdutoService produtoService;
-    private final ControleEstoqueService controleEstoqueService;
 
-    public ProdutoController(ProdutoService produtoService, ControleEstoqueService controleEstoqueService) {
+
+    public ProdutoController(ProdutoService produtoService) {
         this.produtoService = produtoService;
-        this.controleEstoqueService = controleEstoqueService;
+
     }
 
     @PostMapping(value = {"/create-produto"}, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +59,7 @@ public class ProdutoController {
         return new ResponseEntity(produto, HttpStatus.OK);
     }
 
-    @GetMapping({"/{name}"})
+    @GetMapping(value = {"/{name}"},consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Produto>> getProdutosTOName(@PathVariable String name) {
         List<Produto> produto = this.produtoService.getProdutoTOName(name);
         return new ResponseEntity(produto, HttpStatus.OK);

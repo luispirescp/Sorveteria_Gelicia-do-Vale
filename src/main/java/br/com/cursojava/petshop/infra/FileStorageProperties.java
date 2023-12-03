@@ -1,4 +1,4 @@
-package br.com.cursojava.petshop.config;
+package br.com.cursojava.petshop.infra;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

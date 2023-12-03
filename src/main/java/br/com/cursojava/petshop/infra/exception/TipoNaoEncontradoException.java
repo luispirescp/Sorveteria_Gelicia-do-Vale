@@ -1,4 +1,4 @@
-package br.com.cursojava.petshop.exception;
+package br.com.cursojava.petshop.infra.exception;
 
 public class TipoNaoEncontradoException extends RuntimeException {
     public TipoNaoEncontradoException(String texto) {

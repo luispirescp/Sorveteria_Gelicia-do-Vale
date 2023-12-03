@@ -1,4 +1,4 @@
-package br.com.cursojava.petshop.dto;
+package br.com.cursojava.petshop.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

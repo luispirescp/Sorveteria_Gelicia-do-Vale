@@ -1,4 +1,4 @@
-package br.com.cursojava.petshop.model;
+package br.com.cursojava.petshop.domain.produto;
 
 import lombok.Data;
 

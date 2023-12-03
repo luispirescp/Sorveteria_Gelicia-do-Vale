@@ -1,8 +1,6 @@
-package br.com.cursojava.petshop.service;
+package br.com.cursojava.petshop.domain.produto;
 
-import br.com.cursojava.petshop.dto.ProdutoDTO;
-import br.com.cursojava.petshop.model.Produto;
-import br.com.cursojava.petshop.repository.ProdutoRepository;
+import br.com.cursojava.petshop.domain.dto.ProdutoDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
