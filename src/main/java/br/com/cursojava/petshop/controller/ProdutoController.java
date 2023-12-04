@@ -21,7 +21,6 @@ public class ProdutoController {
         this.produtoService = produtoService;
 
     }
-
     @PostMapping(value = {"/create-produto"}, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProdutoDTO> createProduct(@RequestBody ProdutoDTO produtoDTO) throws IOException {
         ProdutoDTO savedProduto = produtoService.save(produtoDTO);

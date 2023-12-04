@@ -1,0 +1,3 @@
+-- Comando para remover a coluna 'image' da tabela 'produtos'
+--ALTER TABLE produto
+--DROP COLUMN image;

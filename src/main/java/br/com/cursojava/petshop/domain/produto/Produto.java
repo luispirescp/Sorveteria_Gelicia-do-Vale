@@ -1,11 +1,14 @@
 package br.com.cursojava.petshop.domain.produto;
 
+import br.com.cursojava.petshop.domain.fornecedor.Fornecedor;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.io.File;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -29,4 +32,8 @@ public class Produto {
         this.name = nome;
         this.quantity = quantity;
     }
+
+    @ManyToMany(mappedBy = "produtos")
+    private List<Fornecedor> fornecedores = new ArrayList<>();
+
 }

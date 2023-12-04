@@ -129,10 +129,8 @@ public class ProdutoService {
             produto = produtoOptional.get();
             try {
                 produto.setImage(fileName);
-
                 Produto savedProduto = produtoRepository.save(produto);
                 return savedProduto;
-
             } catch (RuntimeException e) {
                 throw new RuntimeException(String.format("O produto com o ID %d não existe!", id));
             }
@@ -183,7 +181,6 @@ public class ProdutoService {
         return produto.getName() != null && !produto.getName().isEmpty()
                 && produto.getPrice() > 0 && produto.getQuantity() > 0;
     }
-
 
     @Transactional
     public void reducesStock(List<ProdutoDTO> produtoDTOS) {
