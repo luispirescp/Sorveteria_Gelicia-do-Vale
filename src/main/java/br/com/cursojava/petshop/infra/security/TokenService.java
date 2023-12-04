@@ -17,7 +17,6 @@ public class TokenService {
 
     @Value("${api.security.token.secret}")
     private String secret;
-
     public String geraToken(Usuario usuario){
         try {
             var algoritmo = Algorithm.HMAC256(secret);

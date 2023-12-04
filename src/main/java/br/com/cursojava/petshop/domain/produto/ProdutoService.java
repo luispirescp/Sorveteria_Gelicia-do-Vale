@@ -4,11 +4,14 @@ import br.com.cursojava.petshop.domain.dto.ProdutoDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -38,15 +41,6 @@ public class ProdutoService {
         return produto != null ? produto.getQuantity() : 0;
     }
 
-    public Boolean verificaNome(String name) {
-        Produto produto = produtoRepository.findByName(name);
-        if (produtoRepository.findByName(name).getName().equals(name) || produto != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public String getImageProduto(String name) {
         Produto produto = (Produto) produtoRepository.findByName(name);
         return produto != null ? produto.getImage() : "";
@@ -58,7 +52,7 @@ public class ProdutoService {
             Produto produtoConvertido = convertToEntity(produtoDTO);
              produtoConvertido.setId(produto.getId());
             try {
-                return  this.produtoRepository.save(produtoConvertido);
+                return this.produtoRepository.save(produtoConvertido);
             } catch (DataAccessException e) {
                 throw new RuntimeException("Erro ao salvar o produto: " + e.getRootCause().getMessage());
             }
@@ -191,4 +185,21 @@ public class ProdutoService {
     }
 
 
+    @Transactional
+    public void reducesStock(List<ProdutoDTO> produtoDTOS) {
+        produtoDTOS.forEach(produtoDTO -> {
+            produtoRepository.findById(produtoDTO.getId()).ifPresent(produto -> {
+                reduceStockIfPossible(produto, produtoDTO.getQuantity());
+            });
+        });
+    }
+    private void reduceStockIfPossible(Produto produto, int quantityToReduce) {
+        if (produto.getQuantity() >= quantityToReduce) {
+            int novaQuantidade = produto.getQuantity() - quantityToReduce;
+            produto.setQuantity(novaQuantidade);
+            produtoRepository.save(produto);
+        } else {
+            throw new RuntimeException("Não é possível reduzir o estoque para o produto " + produto.getId());
+        }
+    }
 }

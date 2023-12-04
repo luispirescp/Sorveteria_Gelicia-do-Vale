@@ -17,8 +17,6 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class ProdutoController {
     private final ProdutoService produtoService;
-
-
     public ProdutoController(ProdutoService produtoService) {
         this.produtoService = produtoService;
 
@@ -30,7 +28,7 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduto);
     }
 
-    @PostMapping(value = {"/create-produto/polula-banco"}, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = {"/polula-banco"}, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Produto>> createProductPolulaBanco(@RequestBody List<Produto> produtos) throws IOException {
         List<Produto> savedProduto = produtoService.saveListProdutos(produtos);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduto);
@@ -45,14 +43,15 @@ public class ProdutoController {
         }
     }
 
-    @PutMapping(value = {"/save-image/{id}"}, consumes = {"multipart/form-data"})
-    public ResponseEntity<Object> salvaImage(@RequestParam Long id, @RequestPart MultipartFile image) throws IOException {
-        String nomeImagemHash = String.valueOf(produtoService.saveImage(id, image));
-//            ProdutoDTO savedProduto = produtoService.save(produtoDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nomeImagemHash);
-
+    @PostMapping(value = {"/reduces-stock"}, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> reducesStock(@RequestBody List<ProdutoDTO> produtoDTOS) {
+        try {
+            produtoService.reducesStock(produtoDTOS);
+            return ResponseEntity.ok("Redução do estoque com sucesso!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
-
     @GetMapping({"/todos-produtos"})
     public ResponseEntity<List<Produto>> getProdutos() {
         List<Produto> produto = this.produtoService.getProduto();
@@ -81,16 +80,6 @@ public class ProdutoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quantidade Não encontrada").getStatusCodeValue();
         }
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletarProduto(@PathVariable Long id) {
-        try {
-            produtoService.deletarProdutoPorId(id);
-            return new ResponseEntity<>("Produto deletado com sucesso", HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O produto com o ID " + id + " não existe!");
-        }
-    }
-
     @GetMapping("producto/{id}")
     public ResponseEntity<Object> getProductById(@PathVariable Long id) {
         try {
@@ -99,6 +88,15 @@ public class ProdutoController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("O produto com o ID " + id + " não foi encontrado!");
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletarProduto(@PathVariable Long id) {
+        try {
+            produtoService.deletarProdutoPorId(id);
+            return new ResponseEntity<>("Produto deletado com sucesso", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O produto com o ID " + id + " não existe!");
         }
     }
 
@@ -111,5 +109,12 @@ public class ProdutoController {
             String mensagemErro = "Erro ao atualizar o produto com o ID: "+id;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensagemErro);
         }
+    }
+
+    @PutMapping(value = {"/save-image/{id}"}, consumes = {"multipart/form-data"})
+    public ResponseEntity<Object> salvaImage(@RequestParam Long id, @RequestPart MultipartFile image) throws IOException {
+        String nomeImagemHash = String.valueOf(produtoService.saveImage(id, image));
+        return ResponseEntity.status(HttpStatus.CREATED).body(nomeImagemHash);
+
     }
 }
