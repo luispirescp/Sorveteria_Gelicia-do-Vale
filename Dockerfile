@@ -8,7 +8,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN mvn clean install
+RUN mvn clean install -U
 
 # Estágio final
 FROM openjdk:17-jdk-slim
