@@ -35,5 +35,4 @@ public class Produto {
 
     @ManyToMany(mappedBy = "produtos")
     private List<Fornecedor> fornecedores = new ArrayList<>();
-
 }
