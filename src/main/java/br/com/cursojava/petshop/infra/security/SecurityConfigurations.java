@@ -24,9 +24,9 @@ public class SecurityConfigurations {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http.csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().authorizeRequests()
-            .antMatchers(HttpMethod.POST, "https://sorveteria-deploy-render.onrender.com/login").permitAll()
-            .anyRequest().authenticated()
+//            .and().authorizeRequests()
+//            .antMatchers(HttpMethod.POST, "https://sorveteria-deploy-render.onrender.com/login").permitAll()
+//            .anyRequest().authenticated()
             .and().addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
