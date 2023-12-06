@@ -25,7 +25,7 @@ public class SecurityConfigurations {
     return http.csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and().authorizeRequests()
-            .antMatchers(HttpMethod.POST, "/login").permitAll()
+            .antMatchers(HttpMethod.POST, "https://sorveteria-deploy-render.onrender.com/login").permitAll()
             .anyRequest().authenticated()
             .and().addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
