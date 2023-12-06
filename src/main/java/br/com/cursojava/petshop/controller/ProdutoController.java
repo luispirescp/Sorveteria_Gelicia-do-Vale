@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "*")
+@RequestMapping("https://sorveteria-deploy-render.onrender.com")
 public class ProdutoController {
     private final ProdutoService produtoService;
     public ProdutoController(ProdutoService produtoService) {

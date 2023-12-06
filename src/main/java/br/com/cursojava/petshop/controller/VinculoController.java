@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("https://sorveteria-deploy-render.onrender.com")
 public class VinculoController {
 
     private final VinculoService vinculoService;
