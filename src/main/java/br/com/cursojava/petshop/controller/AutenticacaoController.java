@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("https://sorveteria-deploy-render.onrender.com")
 public class AutenticacaoController {
     @Autowired
     private AuthenticationManager manager;
