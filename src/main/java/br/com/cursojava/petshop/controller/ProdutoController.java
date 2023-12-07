@@ -79,7 +79,7 @@ public class ProdutoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quantidade Não encontrada").getStatusCodeValue();
         }
     }
-    @GetMapping("producto/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> getProductById(@PathVariable Long id) {
         try {
             Optional<Produto> produto = produtoService.getProdutoByID(id);
@@ -114,6 +114,5 @@ public class ProdutoController {
     public ResponseEntity<Object> salvaImage(@RequestParam Long id, @RequestPart MultipartFile image) throws IOException {
         String nomeImagemHash = String.valueOf(produtoService.saveImage(id, image));
         return ResponseEntity.status(HttpStatus.CREATED).body(nomeImagemHash);
-
     }
 }
