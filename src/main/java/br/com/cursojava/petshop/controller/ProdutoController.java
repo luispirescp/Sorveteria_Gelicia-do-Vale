@@ -57,7 +57,7 @@ public class ProdutoController {
         return new ResponseEntity(produto, HttpStatus.OK);
     }
 
-    @GetMapping(value = {"/{name}"},consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = {"product/{name}"},consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Produto>> getProdutosTOName(@PathVariable String name) {
         List<Produto> produto = this.produtoService.getProdutoTOName(name);
         return new ResponseEntity(produto, HttpStatus.OK);

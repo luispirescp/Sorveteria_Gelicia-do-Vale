@@ -117,6 +117,7 @@ public class ProdutoService {
         produto.setQuantity(produtoDTO.getQuantity());
         produto.setTipo(produtoDTO.getTipo());
         produto.setPrice(produtoDTO.getPrice());
+        produto.setImage(produtoDTO.getImage());
         return produto;
     }
 
