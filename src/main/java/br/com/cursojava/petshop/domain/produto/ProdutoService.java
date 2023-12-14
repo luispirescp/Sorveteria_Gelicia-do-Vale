@@ -1,19 +1,15 @@
 package br.com.cursojava.petshop.domain.produto;
 
 import br.com.cursojava.petshop.domain.dto.ProdutoDTO;
-import org.springframework.beans.factory.annotation.Value;
+import org.modelmapper.MappingException;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,17 +17,20 @@ import java.util.Optional;
 @Service
 public class ProdutoService {
     private final ProdutoRepository produtoRepository;
-    private final Path fileStorageLocation;
-    public static final String caminhoFinal = "C:\\Users\\luisp\\Documents\\Programacao\\spring\\Sorveteria_Gelicia-do-Vale\\src\\main\\resources\\static\\public";
 
-    public ProdutoService(ProdutoRepository produtoRepository, @Value(caminhoFinal) Path fileStorageLocation) throws IOException {
+    public ProdutoService(ProdutoRepository produtoRepository) throws IOException {
         this.produtoRepository = produtoRepository;
-        this.fileStorageLocation = fileStorageLocation;
+
+    }
+
+    public Page<Produto> getProdutoPage(Pageable pageable) {
+        return produtoRepository.findAll(pageable);
     }
 
     public List<Produto> getProduto() {
-        return (List) this.produtoRepository.findAll();
+        return produtoRepository.findAll();
     }
+
 
     public List<Produto> getProdutoTOName(String name) {
         return this.produtoRepository.findByParteNome(name);
@@ -41,10 +40,6 @@ public class ProdutoService {
         return produto != null ? produto.getQuantity() : 0;
     }
 
-    public String getImageProduto(String name) {
-        Produto produto = (Produto) produtoRepository.findByName(name);
-        return produto != null ? produto.getImage() : "";
-    }
     public Produto alteraProduto(ProdutoDTO produtoDTO, Long id) {
         Optional<Produto> produtoOptional = produtoRepository.findById(id);
         if (produtoOptional.isPresent()) {
@@ -77,21 +72,34 @@ public class ProdutoService {
     }
 
     public ProdutoDTO save(ProdutoDTO produtoDTO) {
-        Produto produto = convertToEntity(produtoDTO);
-        Produto savedProduto = produtoRepository.save(produto);
-        return convertToDTO(savedProduto);
+        try {
+            Produto produto = convertToEntity(produtoDTO);
+            Produto savedProduto = produtoRepository.save(produto);
+            return convertToDTO(savedProduto);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Erro ao salvar produto");
+        }
+    }
+
+    private Produto convertToEntity(ProdutoDTO produtoDTO) {
+        try {
+            ModelMapper modelMapper = new ModelMapper();
+            return modelMapper.map(produtoDTO, Produto.class);
+        } catch (MappingException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Erro ao converter DTO para entidade");
+        }
     }
 
     private ProdutoDTO convertToDTO(Produto produto) {
-        ProdutoDTO produtoDTO = new ProdutoDTO();
-        produtoDTO.setId(produto.getId());
-        produtoDTO.setName(produto.getName());
-        produtoDTO.setBarcode(produto.getBarcode());
-        produtoDTO.setDescription(produto.getDescription());
-        produtoDTO.setQuantity(produto.getQuantity());
-        produtoDTO.setTipo(produto.getTipo());
-        produtoDTO.setPrice(produto.getPrice());
-        return produtoDTO;
+        try {
+            ModelMapper modelMapper = new ModelMapper();
+            return modelMapper.map(produto, ProdutoDTO.class);
+        } catch (MappingException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Erro ao converter entidade para DTO");
+        }
     }
 
     public void reduzirQuantidadeDoProduto(Long id, int quantidadeComprada){
@@ -104,60 +112,6 @@ public class ProdutoService {
             produtoRepository.save(produto);
         }else {
             throw new RuntimeException("Quantidade insuficiente em estoque");
-        }
-    }
-
-    // Método para converter ProdutoDTO em Produto
-    private Produto convertToEntity(ProdutoDTO produtoDTO) {
-        Produto produto = new Produto();
-        produto.setId(produtoDTO.getId());
-        produto.setName(produtoDTO.getName());
-        produto.setBarcode(produtoDTO.getBarcode());
-        produto.setDescription(produtoDTO.getDescription());
-        produto.setQuantity(produtoDTO.getQuantity());
-        produto.setTipo(produtoDTO.getTipo());
-        produto.setPrice(produtoDTO.getPrice());
-        produto.setImage(produtoDTO.getImage());
-        return produto;
-    }
-
-    public Produto saveImage(Long id, MultipartFile image) throws IOException {
-        Produto produto = null;
-        String fileName = generateHash(image.getOriginalFilename()) + "_" + image.getOriginalFilename();
-        saveImageLocalStorge(fileName, image);
-        Optional<Produto> produtoOptional = produtoRepository.findById(id);
-        if (produtoOptional.isPresent()) {
-            produto = produtoOptional.get();
-            try {
-                produto.setImage(fileName);
-                Produto savedProduto = produtoRepository.save(produto);
-                return savedProduto;
-            } catch (RuntimeException e) {
-                throw new RuntimeException(String.format("O produto com o ID %d não existe!", id));
-            }
-        }
-        return produto;
-    }
-
-    private void saveImageLocalStorge(String fileName, MultipartFile image) throws IOException {
-        Path targetLocation = fileStorageLocation.resolve(fileName);
-        Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    public static String generateHash(String imageName) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(imageName.getBytes());
-            BigInteger no = new BigInteger(1, messageDigest);
-            // Convertendo o hash em formato hexadecimal
-            StringBuilder hashText = new StringBuilder(no.toString(16));
-            while (hashText.length() < 32) {
-                hashText.insert(0, "0");
-            }
-            return hashText.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
         }
     }
 

@@ -2,6 +2,7 @@ package br.com.cursojava.petshop.controller;
 
 import br.com.cursojava.petshop.domain.user.UserService;
 import br.com.cursojava.petshop.domain.user.Usuario;
+import br.com.cursojava.petshop.domain.user.UsuarioDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,8 @@ public class UserController {
     }
 
     @PostMapping(value = {"/create-usuario"}, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Usuario> createUser(@RequestBody Usuario usuario) throws IOException {
-        userService.save(usuario);
+    public ResponseEntity<Usuario> createUser(@RequestBody UsuarioDTO usuarioDTO) throws IOException {
+        Usuario usuario = userService.save(usuarioDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
 

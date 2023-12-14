@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.List;
 
-@Table(name = "usuario")
+
 @Entity(name = "usuario")
 @Data
 public class Usuario implements UserDetails {

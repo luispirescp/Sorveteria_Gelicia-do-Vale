@@ -1,28 +1,36 @@
 package br.com.cursojava.petshop.domain.user;
 
-import br.com.cursojava.petshop.domain.dto.ProdutoDTO;
-import br.com.cursojava.petshop.domain.produto.Produto;
+import org.modelmapper.MappingException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class UserService {
-
-
     @Autowired
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
+    @Autowired
+    private final ModelMapper modelMapper;
+    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
-
-    public void save(Usuario usuario) {
-        Usuario usuario_ = new Usuario();
-        usuario_.setLogin(usuario.getLogin());
-        usuario_.setSenha(usuario.getSenha());
-        userRepository.save(usuario_);
+    public Usuario save(UsuarioDTO usuarioDTO) {
+        try {
+            Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+            return userRepository.save(usuario);
+        } catch (MappingException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Erro ao salvar usuário - Problema no mapeamento");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao salvar usuário");
+        }
     }
 
     public List<Usuario> getUsuarios(){

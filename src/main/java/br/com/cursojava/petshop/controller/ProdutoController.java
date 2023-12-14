@@ -3,11 +3,12 @@ package br.com.cursojava.petshop.controller;
 import br.com.cursojava.petshop.domain.dto.ProdutoDTO;
 import br.com.cursojava.petshop.domain.produto.Produto;
 import br.com.cursojava.petshop.domain.produto.ProdutoService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,24 +52,27 @@ public class ProdutoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping({"/todos-produtos"})
-    public ResponseEntity<List<Produto>> getProdutos() {
-        List<Produto> produto = this.produtoService.getProduto();
-        return new ResponseEntity(produto, HttpStatus.OK);
+    @GetMapping("/todos-produtos-page")
+    public ResponseEntity<Page<Produto>> getProdutos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<Produto> produtos = produtoService.getProdutoPage(pageable);
+        return new ResponseEntity(produtos, HttpStatus.OK);
     }
 
-    @GetMapping(value = {"product/{name}"},consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping("/todos-produtos")
+    public ResponseEntity<List<Produto>> getProdutos() {
+        List<Produto> produtos = produtoService.getProduto();
+        return new ResponseEntity(produtos, HttpStatus.OK);
+    }
+
+    @GetMapping(value = {"product/{name}"})
     public ResponseEntity<List<Produto>> getProdutosTOName(@PathVariable String name) {
         List<Produto> produto = this.produtoService.getProdutoTOName(name);
         return new ResponseEntity(produto, HttpStatus.OK);
     }
 
-    @GetMapping({"/file/{name}"})
-    public ResponseEntity<Object> getImage(@PathVariable String name) throws IOException {
-        String baseUrlImage = "http://localhost:8080/public/";
-        String imageUrl = baseUrlImage + produtoService.getImageProduto(name);
-        return ResponseEntity.status(302).location(java.net.URI.create(imageUrl)).build();
-    }
 
     @GetMapping({"/quantidade/{name}"})
     public int quantidade(@PathVariable String name) {
@@ -98,7 +102,6 @@ public class ProdutoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("O produto com o ID " + id + " não existe!");
         }
     }
-
     @PutMapping("/{id}")
     public ResponseEntity<Object> atualizarProduto(@PathVariable Long id, @RequestBody ProdutoDTO produtoDTO) {
         try {
@@ -108,11 +111,5 @@ public class ProdutoController {
             String mensagemErro = "Erro ao atualizar o produto com o ID: "+id;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mensagemErro);
         }
-    }
-
-    @PutMapping(value = {"/save-image/{id}"}, consumes = {"multipart/form-data"})
-    public ResponseEntity<Object> salvaImage(@RequestParam Long id, @RequestPart MultipartFile image) throws IOException {
-        String nomeImagemHash = String.valueOf(produtoService.saveImage(id, image));
-        return ResponseEntity.status(HttpStatus.CREATED).body(nomeImagemHash);
     }
 }
