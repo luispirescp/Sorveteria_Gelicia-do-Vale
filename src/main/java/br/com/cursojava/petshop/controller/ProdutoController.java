@@ -44,9 +44,9 @@ public class ProdutoController {
     }
 
     @PostMapping(value = {"/reduces-stock"}, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> reducesStock(@RequestBody List<ProdutoDTO> produtoDTOS) {
+    public ResponseEntity<String> reducesStock(@RequestBody List<Long> productIds) {
         try {
-            produtoService.reducesStock(produtoDTOS);
+            produtoService.reduceStock(productIds);
             return ResponseEntity.ok("Redução do estoque com sucesso!");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

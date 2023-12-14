@@ -137,21 +137,58 @@ public class ProdutoService {
                 && produto.getPrice() > 0 && produto.getQuantity() > 0;
     }
 
+
+
+
+//    @Transactional
+//    public void reducesStock(List<Produto> productIds) {
+//        if (productIds.size() != quantities.size()) {
+//            throw new IllegalArgumentException("Listas de IDs e quantidades devem ter o mesmo tamanho");
+//        }
+//
+//        for (int i = 0; i < productIds.size(); i++) {
+//            Long productId = productIds.get(i);
+//            Integer quantityToReduce = quantities.get(i);
+//
+//            produtoRepository.findById(productId).ifPresent(produto -> {
+//                reduceStockIfPossible(produto, quantityToReduce);
+//            });
+//        }
+//    }
+
+
+
+
+
+
+
+
+
     @Transactional
-    public void reducesStock(List<ProdutoDTO> produtoDTOS) {
-        produtoDTOS.forEach(produtoDTO -> {
-            produtoRepository.findById(produtoDTO.getId()).ifPresent(produto -> {
-                reduceStockIfPossible(produto, produtoDTO.getQuantity());
+    public void reduceStock(List<Long> productIds) {
+        for (Long productId : productIds) {
+            produtoRepository.findById(productId).ifPresent(product -> {
+                reduceStockIfPossible(product, 1); // Reduz 1 unidade do estoque do produto
             });
-        });
-    }
-    private void reduceStockIfPossible(Produto produto, int quantityToReduce) {
-        if (produto.getQuantity() >= quantityToReduce) {
-            int novaQuantidade = produto.getQuantity() - quantityToReduce;
-            produto.setQuantity(novaQuantidade);
-            produtoRepository.save(produto);
-        } else {
-            throw new RuntimeException("Não é possível reduzir o estoque para o produto " + produto.getId());
         }
     }
+
+    private void reduceStockIfPossible(Produto product, int quantityToReduce) {
+        if (product.getQuantity() >= quantityToReduce) {
+            int newQuantity = product.getQuantity() - quantityToReduce;
+            product.setQuantity(newQuantity);
+            produtoRepository.save(product);
+        } else {
+            throw new RuntimeException("Não é possível reduzir o estoque para o produto " + product.getId());
+        }
+    }
+//    private void reduceStockIfPossible(Produto produto, int quantityToReduce) {
+//        if (produto.getQuantity() >= quantityToReduce) {
+//            int novaQuantidade = produto.getQuantity() - quantityToReduce;
+//            produto.setQuantity(novaQuantidade);
+//            produtoRepository.save(produto);
+//        } else {
+//            throw new RuntimeException("Não é possível reduzir o estoque para o produto " + produto.getId());
+//        }
+//    }
 }
