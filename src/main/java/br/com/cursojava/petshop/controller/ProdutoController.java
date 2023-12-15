@@ -52,6 +52,11 @@ public class ProdutoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/valorTotalVendido")
+    public List<Object[]> obterValorTotalVendido() {
+        return produtoService.calcularValorTotalVendido();
+    }
     @GetMapping("/todos-produtos-page")
     public ResponseEntity<Page<Produto>> getProdutos(
             @RequestParam(defaultValue = "0") int page,

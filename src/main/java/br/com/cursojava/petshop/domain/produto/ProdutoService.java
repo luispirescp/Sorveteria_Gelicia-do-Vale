@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -137,31 +138,12 @@ public class ProdutoService {
                 && produto.getPrice() > 0 && produto.getQuantity() > 0;
     }
 
+    public List<Object[]> calcularValorTotalVendido() {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = LocalDate.now();
 
-
-
-//    @Transactional
-//    public void reducesStock(List<Produto> productIds) {
-//        if (productIds.size() != quantities.size()) {
-//            throw new IllegalArgumentException("Listas de IDs e quantidades devem ter o mesmo tamanho");
-//        }
-//
-//        for (int i = 0; i < productIds.size(); i++) {
-//            Long productId = productIds.get(i);
-//            Integer quantityToReduce = quantities.get(i);
-//
-//            produtoRepository.findById(productId).ifPresent(produto -> {
-//                reduceStockIfPossible(produto, quantityToReduce);
-//            });
-//        }
-//    }
-
-
-
-
-
-
-
+        return produtoRepository.calcularValorTotalVendido(startDate,endDate);
+    }
 
 
     @Transactional
@@ -176,19 +158,15 @@ public class ProdutoService {
     private void reduceStockIfPossible(Produto product, int quantityToReduce) {
         if (product.getQuantity() >= quantityToReduce) {
             int newQuantity = product.getQuantity() - quantityToReduce;
+            int newQuantityVendida = product.getQuantity_vendida() + quantityToReduce;
             product.setQuantity(newQuantity);
+            product.setQuantity_vendida(newQuantityVendida);
+            product.setStatus_compra(product.foiComprado());
+            LocalDate dataAtual = LocalDate.now();
+            product.setData_venda(dataAtual);
             produtoRepository.save(product);
         } else {
             throw new RuntimeException("Não é possível reduzir o estoque para o produto " + product.getId());
         }
     }
-//    private void reduceStockIfPossible(Produto produto, int quantityToReduce) {
-//        if (produto.getQuantity() >= quantityToReduce) {
-//            int novaQuantidade = produto.getQuantity() - quantityToReduce;
-//            produto.setQuantity(novaQuantidade);
-//            produtoRepository.save(produto);
-//        } else {
-//            throw new RuntimeException("Não é possível reduzir o estoque para o produto " + produto.getId());
-//        }
-//    }
 }

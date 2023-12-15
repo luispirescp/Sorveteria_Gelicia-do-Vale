@@ -1,19 +1,16 @@
 package br.com.cursojava.petshop.domain.produto;
 
-import br.com.cursojava.petshop.domain.fornecedor.Fornecedor;
+import br.com.cursojava.petshop.domain.dto.enums.Status;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.io.File;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
 
 
 @Entity
 @Data
+@AllArgsConstructor
 public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -22,9 +19,14 @@ public class Produto {
     private String barcode;
     private String description;
     private int quantity;
+    private int quantity_vendida;
     private String tipo;
     private double price;
     private String image;
+    private LocalDate data_venda;
+    @Enumerated(EnumType.STRING)
+    private Status status_compra;
+
 
     public Produto() {
     }
@@ -33,6 +35,10 @@ public class Produto {
         this.quantity = quantity;
     }
 
-    @ManyToMany(mappedBy = "produtos")
-    private List<Fornecedor> fornecedores = new ArrayList<>();
+    public Status foiComprado() {
+        return this.status_compra = Status.COMPRADO;
+    }
+
+//    @ManyToMany(mappedBy = "produtos")
+//    private List<Fornecedor> fornecedores = new ArrayList<>();
 }
